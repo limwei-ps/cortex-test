@@ -63,8 +63,8 @@ def get_trends():
             geo = v.split(",")[0]
             prodh = v.split(",")[1]
             end_date = date.today()
-            timeframe = '{start_date} {end_date}'.format(start_date=start_date,
-                                                         end_date=end_date)
+            timeframe = 'now 7-d' #''{start_date} {end_date}'.format(start_date=start_date,
+                                                        # end_date=end_date)
             ## CORTEX-CUSTOMER:After first run - can change to shorter rolling timeframe:
             ##  timeframe='today 7-d'
             gprop = ""

@@ -61,7 +61,7 @@ END IF;
 SET noaa_max_creation_datetime = (
   SELECT MAX(creation_time)
 ## --CORTEX-CUSTOMER: Replace all occurrences of the dataset below if using a copy or a different name
-  FROM `bigquery-public-data.noaa_global_forecast_system.NOAA_GFS0P25`
+  FROM `{{ project_id_src }}.noaa_global_forecast_system.NOAA_GFS0P25`
   WHERE creation_time > DATE_SUB(CURRENT_DATE('UTC'), INTERVAL 7 DAY));
 
 IF (EXTRACT(HOUR FROM noaa_max_creation_datetime) = 18) THEN
@@ -94,7 +94,7 @@ AS (
     MAX(F.temperature_2m_above_ground) AS max_temp,
     'OBSERVED' AS value_type
   FROM
-    `bigquery-public-data.noaa_global_forecast_system.NOAA_GFS0P25` AS G
+    `{{ project_id_src }}.noaa_global_forecast_system.NOAA_GFS0P25` AS G
     CROSS JOIN UNNEST(G.forecast) AS F
     INNER JOIN `{{ project_id_src }}.{{ k9_datasets_processing }}.postcode` AS P
       ON ST_WITHIN(ST_GEOGFROMTEXT(P.centroid), G.geography_polygon)
@@ -135,7 +135,7 @@ AS (
             ORDER BY G.creation_time DESC)
           AS rn
       FROM
-        `bigquery-public-data.noaa_global_forecast_system.NOAA_GFS0P25` AS G CROSS JOIN UNNEST(G.forecast) AS F
+        `{{ project_id_src }}.noaa_global_forecast_system.NOAA_GFS0P25` AS G CROSS JOIN UNNEST(G.forecast) AS F
         INNER JOIN `{{ project_id_src }}.{{ k9_datasets_processing }}.postcode` AS P
           ON ST_WITHIN(ST_GEOGFROMTEXT(P.centroid), G.geography_polygon)
       WHERE

@@ -1,14 +1,14 @@
 {
     "testData": true,
     "deploySAP": true,
-    "deploySFDC": true,
-    "deployMarketing": true,
+    "deploySFDC": false,
+    "deployMarketing": false,
     "deployDataMesh": true,
     "turboMode": true,
-    "projectIdSource": "",
-    "projectIdTarget": "",
-    "targetBucket": "",
-    "location": "US",
+    "projectIdSource": "${_PJID_SRC}",
+    "projectIdTarget": "${_PJID_SRC}",
+    "targetBucket": "cortex-data-foundation-dag",
+    "location": "asia-southeast1",
     "languages": [
         "E",
         "S"
@@ -19,23 +19,23 @@
     "testDataProject": "kittycorn-public",
     "k9": {
         "datasets": {
-            "processing": "K9_PROCESSING",
-            "reporting": "K9_REPORTING"
+            "processing": "k9processing",
+            "reporting": "k9reporting"
         }
     },
     "DataMesh": {
-        "deployDescriptions": true,
+        "deployDescriptions": false,
         "deployLakes": false,
-        "deployCatalog": false,
-        "deployACLs": false
+        "deployCatalog": true,
+        "deployACLs": true
     },
     "SAP": {
         "deployCDC": true,
         "datasets": {
-            "cdc": "",
-            "raw": "",
-            "ml": "ML_MODELS",
-            "reporting": "REPORTING"
+            "cdc": "sap_cdc_processed",
+            "raw": "sap_raw",
+            "ml": "_sap_ml_models",
+            "reporting": "sap_reporting"
         },
         "SQLFlavor": "ecc",
         "mandt": "100"
@@ -45,9 +45,9 @@
         "createMappingViews": true,
         "createPlaceholders": true,
         "datasets": {
-            "cdc": "",
-            "raw": "",
-            "reporting": "REPORTING_SFDC"
+            "cdc": "sfdc_cdc_processed",
+            "raw": "sfdc_raw",
+            "reporting": "sfdc_reporting"
         }
     },
     "marketing": {
@@ -57,53 +57,53 @@
         "deployLiveRamp": true,
         "deployMeta": true,
         "deploySFMC": true,
-        "dataflowRegion": "",
+        "dataflowRegion": "asia-southeast1",
         "GoogleAds": {
             "deployCDC": true,
             "lookbackDays": 180,
             "datasets": {
-                "cdc": "",
-                "raw": "",
-                "reporting": "REPORTING_GoogleAds"
+                "cdc": "googleads_cdc_processed",
+                "raw": "googleads_raw",
+                "reporting": "googleads_reporting"
             }
         },
         "CM360": {
             "deployCDC": true,
-            "dataTransferBucket": "",
+            "dataTransferBucket": "cortex-data-foundation-dag",
             "datasets": {
-                "cdc": "",
-                "raw": "",
-                "reporting": "REPORTING_CM360"
+                "cdc": "cm360_cdc_processed",
+                "raw": "cm360_raw",
+                "reporting": "cm360_reporting"
             }
         },
         "TikTok": {
             "deployCDC": true,
             "datasets": {
-                "cdc": "",
-                "raw": "",
-                "reporting": "REPORTING_TikTok"
+                "cdc": "tiktok_cdc_processed",
+                "raw": "tiktok_raw",
+                "reporting": "tiktok_reporting"
             }
         },
         "LiveRamp": {
             "datasets": {
-                "cdc": ""
+                "cdc": "liveramp_cdc_processed"
             }
         },
         "Meta": {
             "deployCDC": true,
             "datasets": {
-                "cdc": "",
-                "raw": "",
-                "reporting": "REPORTING_Meta"
+                "cdc": "meta_cdc_processed",
+                "raw": "meta_raw",
+                "reporting": "meta_reporting"
             }
         },
         "SFMC": {
             "deployCDC": true,
-            "fileTransferBucket": "",
+            "fileTransferBucket": "cortex-data-foundation-dag",
             "datasets": {
-                "cdc": "",
-                "raw": "",
-                "reporting": "REPORTING_SFMC"
+                "cdc": "sfmc_cdc_processed",
+                "raw": "sfmc_raw",
+                "reporting": "smfc_reporting"
             }
         }
     },

@@ -243,6 +243,7 @@ substitutions:
   _CONFIG_FILE: "config/config.json"
   _DEPLOY_SAP_ML_MODELS: "false"
   _NO_TEST_DATA: "false"
+serviceAccount: "projects/${_PJID_SRC}/serviceAccounts/${_SERVICE_ACCOUNT}"
 options:
   substitution_option: "ALLOW_LOOSE"
   automapSubstitutions: true

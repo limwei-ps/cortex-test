@@ -71,6 +71,7 @@ timeout: 15000s
 logsBucket: "gs://${_GCS_LOGS_BUCKET}"
 substitutions:
   _EXECUTE_SAMPLES: "false"
+serviceAccount: "projects/${_PJID_SRC}/serviceAccounts/${_SERVICE_ACCOUNT}"
 options:
   substitution_option: "ALLOW_LOOSE"
   machineType: "E2_HIGHCPU_32"
