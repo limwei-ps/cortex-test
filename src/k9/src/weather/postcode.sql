@@ -32,7 +32,7 @@ WITH
       (SELECT value FROM layers.all_tags WHERE key = 'ISO3166-1') as country,
       geometry
     ## --CORTEX-CUSTOMER: Replace all occurrences of the dataset below if using a copy or a different name
-    FROM `bigquery-public-data.geo_openstreetmap.planet_layers` AS layers
+    FROM `{{ project_id_src }}.geo_openstreetmap.planet_layers` AS layers
     WHERE layer_class = 'boundary'
       AND layer_name = 'national'
       AND EXISTS (SELECT 1 FROM layers.all_tags WHERE key = 'ISO3166-1')
@@ -47,7 +47,7 @@ WITH
         LIMIT 1
       ) AS postcode,
       ST_CENTROID(geometry) AS centroid,
-    FROM `bigquery-public-data.geo_openstreetmap.planet_layers` AS layers
+    FROM `{{ project_id_src }}.geo_openstreetmap.planet_layers` AS layers
     WHERE EXISTS (
       SELECT 1
       FROM layers.all_tags
