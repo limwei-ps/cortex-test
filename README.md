@@ -1190,7 +1190,7 @@ C. Post Deployment
     - Move the files into the DAG bucket
     - Spin Up Composer 
     - Setup connections for composer and pypackage if required
-    - 
+
 
 # FAQ
 [Complete] Quick Deployment Run 
@@ -1200,19 +1200,15 @@ C. Post Deployment
 
 |  | Business | Technical  |
 | --- | --- | --- |
-| What is cortex framework  | Framework to accelerate business insights and outcomes with less risk, complexity, and cost with **reference architectures**, **packaged solution deployment content**, and **integration services** to kickstart data and AI cloud journey. |  |
-| How to use cortex framework | Deploy the cortex data foundation (consider workload to use based on customer needs) first and consider other subsequent solutions |  |
-| Can we adjust any of the components  | Yes, it can be workload config or script config with #CORTEX CUSTOMER.
-Can be customized beyond those config but it will be out of scope of the cortex data foundation and shall be treated as a separate foundation |  |
-| Can we import only certain tables from one of the workloads |  |  |
-| What about to multiple sap system  |  |  |
-| How can we update the framework from time to time |  | By using git fetch and merge to another branch and automated build with cloud build |
-| What are the CI/CD practices here |  | The whole solution is built with Cloud Build
-Will implement another cloudbuild.yaml to configure it to push to test and prod env |
-| How should we managed the data ingestion/integration |  | Use google or partner managed connectors. These are not part of cortex framework |
-| When can we set testdata = True |  | Use test data = True, if the customers do not have any tables in BQ yet.  
-Ideally, use test data = False, if customers already have the tables in BQ |
-| What if one of the table is missing |  |  |
-| Is Impersonation of Service Account required? |  | Yes, it should be used at all times to align with principle of least privileges |
-| What about added table |  |  |
-| What about added columns |  |  |
+| What is cortex framework  | Framework to accelerate business insights and outcomes with less risk, complexity, and cost with **reference architectures**, **packaged solution deployment content**, and **integration services** to kickstart data and AI cloud journey. | Solution to use services on Google Cloud Platform to ingest data from variety of sources to form a single source of truth in GCP and expose them strategically for business needs, including AI workloads|
+| How to use cortex framework | Deploy the cortex data foundation (consider workload to use based on customer needs) first and consider other subsequent solutions like Looker, ML Model, Application Layer| Deploy Cortex Data Foundation, Looker, Application Integration Services  |
+| Can we adjust any of the components  | Yes, it can be workload config or script config with #CORTEX CUSTOMER.| Can be customized beyond those config but it will be out of scope of the cortex data foundation and shall be treated as a separate foundation |  |
+| Can we import only certain tables from one of the workloads | Yes, this is the core feature of Cortex Data Foundation | Edit cdc_settings.yaml and DD03L table |
+| What about to multiple sap system  | Yes, there is a client/mandt column for each table | Data ingestion should be to the same table with a differnt mandt value | We will fetch the updates to one of the branch of the github
+| How can we update the framework from time to time | We will fetch the updates to the dev branch of the github | By using git fetch and merge to dev branch and automated build with cloud build |
+| What are the CI/CD practices here | Cloud Build as a managed CI/CD solution | The whole solution is built with Cloud Build. Will implement another cloudbuild.yaml to configure it to push to pre-prod and prod env |
+| How should we managed the data ingestion/integration | Use google or partner leading connectors | Use google managed connectors (focusing on SLT) and partner managed connectors|
+| When can we set testdata = True | This should be avoided for production | Test data = True, should not be used in production. Ideally, use test data = False, once customers already have the tables in BigQuert |
+| Is Impersonation of Service Account required? | This is to prevent assigning specific access to user directly | Yes, it is recommended by Google and aligns with principle of least privileges |
+| What about added/removed table | This is possible and will need to make adjustments during workload configuration | Include/Exclude them from cdc_settings.yaml/DD03L  and relevant reporting 
+| What about added/removed columns | This is only possible during first deployment | Will need to make adjustments in DD03L table |
