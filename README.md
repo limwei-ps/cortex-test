@@ -850,6 +850,13 @@ We recommend pasting the generated SQL into BigQuery to identify and correct the
     ![image.png](images/image_44.png)
     ![image.png](images/image_45.png)
 
+Permissions required may vary depending on the setup of the project. Consider the following documentation if you run into errors:
+*   [Permissions to run Cloud Build](https://cloud.google.com/build/docs/securing-builds/configure-access-to-resources)
+*   [Permissions to storage for the Build Account](https://cloud.google.com/build/docs/securing-builds/store-manage-build-logs)
+*   [Permissions for the Cloud Build service account](https://cloud.google.com/build/docs/securing-builds/configure-access-for-cloud-build-service-account)
+*   [Viewing logs from Builds](https://cloud.google.com/build/docs/securing-builds/store-manage-build-logs#viewing_build_logs)
+
+
 ### Possible Scenario during Deployment
 
 ### Run only with testdata=false and deploysap=true
@@ -1027,8 +1034,41 @@ We recommend pasting the generated SQL into BigQuery to identify and correct the
 gsutil -m cp -r  gs://<output bucket>/dags/ gs://<composer dag bucket>/
 gsutil -m cp -r  gs://<output bucket>/data/ gs://<composer sql bucket>/
 ```
-#### Spin  Up Cloud Composer
+#### [Spin  Up Cloud Composer](https://cloud.google.com/composer/docs/composer-3/create-environments#before_you_begin)
 
+
+![images](images/image_52.png)
+
+- [x]  enter name of env
+- [x]  enter location - asia-souteast1
+- [x]  setup service acc for composer - use user defined service account granted with composer.worker role
+- [x]  config environment scale and performance parameters based on cust
+    
+    ![images](images/image_53.png)
+    
+- [x]  config environment's networking
+    
+    ![images](images/image_54.png)
+    
+- [x]  add network tags - cortex-data-foundation
+- [x]  config web server network access - allow all ip
+- [x]  specify maintenance windows
+    
+    ![images](images/image_55.png)
+    
+- [x]  enable data lineage optional
+- [x]  configure data encryption
+- [x]  use a custom environment's bucket - use custom created bucket
+    
+    ![images](images/image_56.png)
+    
+- [x]  specify environment labels
+- [x]  setup admin > connection from labels
+    - [x]  add in connection sap_cdc_bq,
+    - [x]  uncheck legacy sql to use standard sql
+    - [x]  repeat for sap_reporting_bq and the rest of the dags script
+
+![images](images/image_57.png)
 
 #### Setting Up Cloud Composer 
 Create connection(s) to the Source Project [in Cloud Composer](https://cloud.google.com/composer/docs/how-to/managing/connections#creating_new_airflow_connections) with the following names for DAG execution, based on the types of deployments below.
@@ -1057,11 +1097,9 @@ The GCS bucket structure for some of the template DAG expects the folders to be 
 ![alt_text](images/20.png "image_tooltip")
 
 
-
-
 ### Test, customize and prepare for upgrade
 
-In addition to the `CORTEX-CUSTOMER` tags, you may need to further customize the content to add business rules, add other datasets and join them with existing views or tables, reuse the provided templates to call additional APIs, modify deployment scripts, apply further data mesh concepts, etc.  You may also need to slightly adapt some tables or landed APIs to include additional fields not included in our standard. We recommend committing all of these changes with a clear tag in the code to your own fork or clone of our git repositories.
+In addition to the `CORTEX-CUSTOMER` tags, you may need to further customize the content to add business rules, add other datasets and join them with existing views or tables, reuse the provided templates to call additional APIs, modify deployment scripts, apply further data mesh concepts, etc.  You may also need to slightly adapt some tables or landed APIs to include additional fields not included in our standard. We recommend committing all of these changes with a clear tag in the code to your own clone of git repositories.
 
 We recommend adopting a CICD pipeline that works for your organization, to keep these enhancements tested and your overall solution in a reliable, robust state. A simple pipeline can reuse our `cloudbuild*.yaml` scripts to trigger end to end deployment periodically, or based on git operations depending on your repository of choice by [automating builds](https://cloud.google.com/build/docs/automating-builds/create-manage-triggers). Using automated testing with your own sample data will help ensure the models always produce what you expect every time someone commits a change. The `config.json` file plays an important role in defining different sets of projects and datasets for development, staging and production environments.
 
@@ -1094,26 +1132,87 @@ You can deploy the Demand Sensing use case [from the Marketplace](https://consol
 Deploy a sample micro-services based application through the [Google Cloud Marketplace](https://console.cloud.google.com/marketplace/product/cortex-public/cloud-cortex-application-layer).
 
 # **Checklist for Production**
-- [ ]  cloud composer env setup - TBC
-- [ ]  shared vpc or vpc peering project setup - TBC (Optional - Using different projects to segregate access)
+
+A. Choose business use case
+
+1. Follow flowchart to decide on the business area to tackle by Cortex
+
+B. Assess current state
+
+1. Evaluate the data ingestion connector for SAP
+   - Ensure DD03L(Table in SAP showing metadata of tables) is replicated.
+   - For multiple sap system, ensure to replicate to same table so long as columns are aligned 
+   - Setup Replication Tool for data ingestion (SAP --> Raw Landing Dataset)
+
+2. Decide if pre-prod env on top of prod env is required. If there is an existing pre-prod for SAP, then this should be configured. A CI/CD pipeline can then be build 
+
+```mermaid
+graph LR
+executing_user --> |push to specific remote branch|github --> |triggers cloud build pipeline for integrated + manual testing|pre-prod --> |if approve by approver, CD will be triggered| prod
+```
+
+3. Decide if target project (data replication) and source project (reporting) should be separated. 
+    - Using two different projects is optional. 
+    A single project can be used to deploy all datasets. In terms of access, dataplex can also manage the accesses. 
 
 > Some customers choose to have different projects for different functions to keep users from having excessive access to some data. The deployment allows for using two projects, one for processing replicated data, where only technical users have access to the raw data, and one for reporting, where business users can query the predefined models or views.
-
-
 ![alt_text](images/18.png "image_tooltip")
+If two projects are used, decide on shared VPC or VPC peering project setup 
+![alt_text](images/image_58.png)
 
+4. Setup and Upgrade github repository (Version Control: clone and fetch)
+    - Use pointstar repository as template.  
+    - Whenever Google Cloud update their Cortex Data Foundation, the updates will be fetch and rebase to one of the cloned branches before deciding on the merging. 
 
-Using two different projects is optional. A single project can be used to deploy all datasets.
+B. Select deployment options 
 
-- [ ]  Full deployment with CI/CD
+1. Configure and Build
+    - Establish Project based on earlier decision to host the BigQuery datasets and execute the deployment process.
+    - Configure GCP components 
+        - Enable API access
+        - Grant service account to execute cloud build and related activities
+        - Create Storage Bucket to store DAG related files, logs
+    - Configure config.json to `turboMode = False` to spot most failures in one go and `testData = False` to prevent deployment with test data
+    - Edit config.json based on global workload 
+    - Edit config.json for workload configuration
+        - Commit all of these changes with a clear `customer tag` in the code to git repositories.
+        - Should all the K9 be used or only holiday and dates are required? 
+        - Are new tables added? If yes, enter the details in cdc_settings and DD03L table
+        - Are existing tables to be removed? If yes, we need to remove cdc_settings and relevant reporting
+        - Are columns added or removed? If yes, it should be reflected in DD03L. This is applicable only for the 1st deployment 
+        - Should it be view or table ? View for immediate updates but will require more cost, table for periodic updates
+        - Should it have clustering and partitioning?
+        - Should data mesh be configured? 
+
+C. Post Deployment
+1. Configure Cloud Composer
+    - Decide on the cloud composer environment setup
+    - Move the files into the DAG bucket
+    - Spin Up Composer 
+    - Setup connections for composer and pypackage if required
+    - 
 
 # FAQ
 [Complete] Quick Deployment Run 
 - This should not be used for production
 - Run with ./1_click.sh and provide the necessary configuration
 
-These permissions may vary depending on the setup of the project. Consider the following documentation if you run into errors:
-*   [Permissions to run Cloud Build](https://cloud.google.com/build/docs/securing-builds/configure-access-to-resources)
-*   [Permissions to storage for the Build Account](https://cloud.google.com/build/docs/securing-builds/store-manage-build-logs)
-*   [Permissions for the Cloud Build service account](https://cloud.google.com/build/docs/securing-builds/configure-access-for-cloud-build-service-account)
-*   [Viewing logs from Builds](https://cloud.google.com/build/docs/securing-builds/store-manage-build-logs#viewing_build_logs)
+
+|  | Business | Technical  |
+| --- | --- | --- |
+| What is cortex framework  | Framework to accelerate business insights and outcomes with less risk, complexity, and cost with **reference architectures**, **packaged solution deployment content**, and **integration services** to kickstart data and AI cloud journey. |  |
+| How to use cortex framework | Deploy the cortex data foundation (consider workload to use based on customer needs) first and consider other subsequent solutions |  |
+| Can we adjust any of the components  | Yes, it can be workload config or script config with #CORTEX CUSTOMER.
+Can be customized beyond those config but it will be out of scope of the cortex data foundation and shall be treated as a separate foundation |  |
+| Can we import only certain tables from one of the workloads |  |  |
+| What about to multiple sap system  |  |  |
+| How can we update the framework from time to time |  | By using git fetch and merge to another branch and automated build with cloud build |
+| What are the CI/CD practices here |  | The whole solution is built with Cloud Build
+Will implement another cloudbuild.yaml to configure it to push to test and prod env |
+| How should we managed the data ingestion/integration |  | Use google or partner managed connectors. These are not part of cortex framework |
+| When can we set testdata = True |  | Use test data = True, if the customers do not have any tables in BQ yet.  
+Ideally, use test data = False, if customers already have the tables in BQ |
+| What if one of the table is missing |  |  |
+| Is Impersonation of Service Account required? |  | Yes, it should be used at all times to align with principle of least privileges |
+| What about added table |  |  |
+| What about added columns |  |  |
