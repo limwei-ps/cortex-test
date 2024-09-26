@@ -1133,70 +1133,76 @@ Deploy a sample micro-services based application through the [Google Cloud Marke
 
 # **Checklist for Production**
 
+Refer to this [Cortex Flowchart](docs\Cortex_Data_Foundation_FlowChart.pdf) to get an overview of how to get started with Cortex Data Foundation. Below is a detailed breakdown of the flowchart
+
 A. Choose business use case
 
-1. Follow flowchart to decide on the business area to tackle by Cortex
+1.  The [Business Area ](https://docs.google.com/spreadsheets/d/1UfQDruvGNXdOX_HyEKdFS9WtTrrFMmgHbjSLisxJOdM/edit?gid=2010658788#gid=2010658788) here provides a prepackaged solution focusing on prominent business area. Customers either choose prepackaged solutions from Cortex or create their own reporting layer by providing the metrics/columns/tables
 
 B. Assess current state
-
-1. Evaluate the data ingestion connector for SAP
-   - Ensure DD03L(Table in SAP showing metadata of tables) is replicated.
-   - For multiple sap system, ensure to replicate to same table so long as columns are aligned 
-   - Setup Replication Tool for data ingestion (SAP --> Raw Landing Dataset)
-
-2. Decide if pre-prod env on top of prod env is required. If there is an existing pre-prod for SAP, then this should be configured. A CI/CD pipeline can then be build 
+1. Decide if pre-prod env on top of prod env is required. If there is an existing pre-prod for SAP and data replication from
+SAP pre-production environment to BigQuery is functional, this setup should be configured. A CI/CD pipeline can then be build 
 
 ```mermaid
 graph LR
-executing_user --> |push to specific remote branch|github --> |triggers cloud build pipeline for integrated + manual testing|pre-prod --> |if approve by approver, CD will be triggered| prod
+executing_user --> |push to pre-prod remote branch|github --> |triggers cloud build pipeline for integrated testing|pre-prod --> |if pass integrated testing and approve by approver after manual testing, CD will be triggered| prod
 ```
+> For successful Cortex deployment in pre-production,
+it will trigger automated deployment to production following approval from reviewer. 
+It includes integrated testing
+
+
+2. Evaluate the data ingestion connector for SAP
+   - Ensure DD03L(Table in SAP showing metadata of tables) is replicated.
+   - For multiple sap system, ensure to replicate to same table so long as columns are aligned 
+   - Setup Replication Tool for data ingestion (SAP --> Raw Landing Dataset). Pick [SAP replication tool](docs/Cortex_SAP_Connector_FlowChart.pdf) from here
+
 
 3. Decide if target project (data replication) and source project (reporting) should be separated. 
     - Using two different projects is optional. 
     A single project can be used to deploy all datasets. In terms of access, dataplex can also manage the accesses. 
 
 > Some customers choose to have different projects for different functions to keep users from having excessive access to some data. The deployment allows for using two projects, one for processing replicated data, where only technical users have access to the raw data, and one for reporting, where business users can query the predefined models or views.
-![alt_text](images/18.png "image_tooltip")
+![alt_text](images/18.png)
 If two projects are used, decide on shared VPC or VPC peering project setup 
 ![alt_text](images/image_58.png)
 
 4. Setup and Upgrade github repository (Version Control: clone and fetch)
     - Use pointstar repository as template.  
-    - Whenever Google Cloud update their Cortex Data Foundation, the updates will be fetch and rebase to one of the cloned branches before deciding on the merging. 
+    - Whenever Google Cloud update their Cortex Data Foundation, the updates will be fetched and rebased to template branches before being merging to evaluate the impact and pushed to pre-prod and prod environment. 
 
 B. Select deployment options 
 
 1. Configure and Build
     - Establish Project based on earlier decision to host the BigQuery datasets and execute the deployment process.
     - Configure GCP components 
-        - Enable API access
-        - Grant service account to execute cloud build and related activities
-        - Create Storage Bucket to store DAG related files, logs
-    - Configure config.json to `turboMode = False` to spot most failures in one go and `testData = False` to prevent deployment with test data
-    - Edit config.json based on global workload 
-    - Edit config.json for workload configuration
-        - Commit all of these changes with a clear `customer tag` in the code to git repositories.
-        - Should all the K9 be used or only holiday and dates are required? 
-        - Are new tables added? If yes, enter the details in cdc_settings and DD03L table
-        - Are existing tables to be removed? If yes, we need to remove cdc_settings and relevant reporting
-        - Are columns added or removed? If yes, it should be reflected in DD03L. This is applicable only for the 1st deployment 
-        - Should it be view or table ? View for immediate updates but will require more cost, table for periodic updates
-        - Should it have clustering and partitioning?
-        - Should data mesh be configured? 
+        - [Enable API access](#enable-api-access-for-project)
+        - [Grant service account to execute cloud build and related activities](#configure-the-cloud-build-service-account-for-deployment-with-impersonation)
+        - [Grant Permission to Executing User](#grant-permissions-to-executing-user)
+        - [Create Storage Bucket to store DAG related files](#create-a-storage-bucket-for-storing-dag-related-files)
+        - [Create Storage Bucket to store logs](#create-a-storage-bucket-for-logs)
+    - [Configure Deployment](#configure-deployment)
+        - Configure config.json to `turboMode = False` to spot most failures in one go and `testData = False` to prevent deployment with test data
+        - Edit config.json based on [global workload](#global-deployment-configuration)
+        - [Edit config.json for workload configuration](#workload-specific-configuration)
+            - Commit all of these changes with a clear `customer tag` in the code to git repositories.
+            - [Should all the K9 be used or only holiday and dates are required?](#workload-specific-configuration)
+            - [Are new tables added? If yes, enter the details in cdc_settings and DD03L table](#tables--columns-adjustment)
+            - [Are existing tables to be removed? If yes, we need to remove cdc_settings and relevant reporting](#tables--columns-adjustment)
+            - [Are columns added or removed? If yes, it should be reflected in DD03L. This is applicable only for the 1st deployment](#tables--columns-adjustment)
+            - [Should it be view or table ? View for immediate updates but will require more cost, table for periodic updates](#configure-data-mesh)
+            - [Should it have clustering and partitioning?](#configure-data-mesh)
+            - [Should data mesh be configured?](#configure-data-mesh)
 
 C. Post Deployment
-1. Configure Cloud Composer
+1. [Configure Cloud Composer](#tables--columns-adjustment)
     - Decide on the cloud composer environment setup
-    - Move the files into the DAG bucket
-    - Spin Up Composer 
-    - Setup connections for composer and pypackage if required
+    - [Move the files into the DAG bucket](#move-the-files-into-the-dag-bucket)
+    - [Spin Up Composer](#spin--up-cloud-composer)
+    - Setup connections (mandatory) for composer and pypackage (if required)
 
 
 # FAQ
-[Complete] Quick Deployment Run 
-- This should not be used for production
-- Run with ./1_click.sh and provide the necessary configuration
-
 
 |  | Business | Technical  |
 | --- | --- | --- |
@@ -1212,3 +1218,4 @@ C. Post Deployment
 | Is Impersonation of Service Account required? | This is to prevent assigning specific access to user directly | Yes, it is recommended by Google and aligns with principle of least privileges |
 | What about added/removed table | This is possible and will need to make adjustments during workload configuration | Include/Exclude them from cdc_settings.yaml/DD03L  and relevant reporting 
 | What about added/removed columns | This is only possible during first deployment | Will need to make adjustments in DD03L table |
+Can we use Quick Deployment Run |This should not be used for production |Run with ./1_click.sh and provide the necessary configuration for a quick demo view |
