@@ -755,7 +755,9 @@ You will find detailed instructions and examples to configure Data Mesh in the [
 
 ##### Catalog Tag Template
 ![image.png](images/image_25.png)
-- define the types and field names which can be used to annotate the assets later.
+- define the types and field names which can be used to annotate the assets or columns later.
+
+`test annotation for column`
 
 ![image.png](images/image_26.png)
 - annotation is used in yaml definition file
@@ -1042,7 +1044,8 @@ gsutil -m cp -r  gs://<output bucket>/data/ gs://<composer sql bucket>/
 - [x]  enter name of env
 - [x]  enter location - asia-souteast1
 - [x]  setup service acc for composer - use user defined service account granted with composer.worker role
-- [x]  config environment scale and performance parameters based on cust
+- [x]  config environment scale and performance parameters based on customer. Guide for [environment setup](https://cloud.google.com/composer/docs/composer-2/optimize-environments)
+
     
     ![images](images/image_53.png)
     
@@ -1096,6 +1099,13 @@ The GCS bucket structure for some of the template DAG expects the folders to be 
 
 ![alt_text](images/20.png "image_tooltip")
 
+#### Optimize [Environment Performance and Cost](https://cloud.google.com/composer/docs/composer-2/optimize-environments)
+- Follow above link to decide on balancing out performance and cost 
+- Recommendation is to optimize  environment in iterations:
+    1. Start with environment presets.
+    2. Run your DAGs.
+    3. Observe your environment's performance.
+    4. Adjust your environment scale and performance parameters, then repeat from the previous step.
 
 ### Test, customize and prepare for upgrade
 
@@ -1133,7 +1143,7 @@ Deploy a sample micro-services based application through the [Google Cloud Marke
 
 # **Checklist for Production**
 
-Refer to this [Cortex Flowchart](docs\Cortex_Data_Foundation_FlowChart.pdf) to get an overview of how to get started with Cortex Data Foundation. Below is a detailed breakdown of the flowchart
+Refer to this [Cortex Flowchart](docs/Cortex_Data_Foundation_FlowChart.pdf) to get an overview of how to get started with Cortex Data Foundation. Below is a detailed breakdown of the flowchart
 
 A. Choose business use case
 
