@@ -756,9 +756,7 @@ You will find detailed instructions and examples to configure Data Mesh in the [
 ##### Catalog Tag Template
 ![image.png](images/image_25.png)
 - define the types and field names which can be used to annotate the assets or columns later.
-
-`test annotation for column`
-
+![image.png](images/image_59.png)
 ![image.png](images/image_26.png)
 - annotation is used in yaml definition file
 - search can then be performed for discovery in dataplex
