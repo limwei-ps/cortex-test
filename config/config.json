@@ -3,19 +3,14 @@
     "deploySAP": true,
     "deploySFDC": false,
     "deployMarketing": false,
+    "deployOracleEBS": false,
     "deployDataMesh": true,
+    "deploySAPMLModels": false,
     "turboMode": true,
     "projectIdSource": "${_PJID_SRC}",
     "projectIdTarget": "${_PJID_SRC}",
     "targetBucket": "cortex-data-foundation-dag",
     "location": "asia-southeast1",
-    "languages": [
-        "E",
-        "S"
-    ],
-    "currencies": [
-        "USD"
-    ],
     "testDataProject": "kittycorn-public",
     "k9": {
         "datasets": {
@@ -31,19 +26,29 @@
     },
     "SAP": {
         "deployCDC": true,
+        "SQLFlavor": "ecc",
+        "mandt": "100",
+        "languages": [
+            "E",
+            "S"
+        ],
+        "currencies": [
+            "USD"
+        ],
         "datasets": {
             "cdc": "sap_cdc_processed",
             "raw": "sap_raw",
-            "ml": "_sap_ml_models",
+            "ml": "sap_ml_models",
             "reporting": "sap_reporting"
-        },
-        "SQLFlavor": "ecc",
-        "mandt": "100"
+        }
     },
     "SFDC": {
         "deployCDC": true,
         "createMappingViews": true,
         "createPlaceholders": true,
+        "currencies": [
+            "USD"
+        ],
         "datasets": {
             "cdc": "sfdc_cdc_processed",
             "raw": "sfdc_raw",
@@ -57,6 +62,8 @@
         "deployLiveRamp": true,
         "deployMeta": true,
         "deploySFMC": true,
+        "deployDV360": true,
+        "deployGA4": true,
         "dataflowRegion": "asia-southeast1",
         "GoogleAds": {
             "deployCDC": true,
@@ -105,12 +112,32 @@
                 "raw": "sfmc_raw",
                 "reporting": "smfc_reporting"
             }
+        },
+        "DV360": {
+            "deployCDC": true,
+            "datasets": {
+                "raw": "",
+                "cdc": "",
+                "reporting": "REPORTING_DV360"
+            }
+        },
+        "GA4": {
+            "datasets": {
+                "cdc": [
+                    {"property_id": 0, "name": ""}
+                ],
+                "reporting": "REPORTING_GA4"
+            }
         }
     },
-    "shareWithCredly": false,
-    "userInfo": {
-        "email": "",
-        "firstName": "",
-        "lastName": ""
+    "OracleEBS": {
+        "itemCategorySetIds": [1100000425],
+        "currencyConversionType": "Corporate",
+        "currencyConversionTargets": ["USD"],
+        "languages": ["US"],
+        "datasets": {
+            "cdc": "",
+            "reporting": "REPORTING_OracleEBS"
+        }
     }
 }
