@@ -1178,7 +1178,12 @@ If two projects are used, decide on shared VPC or VPC peering project setup
 4. Setup and Upgrade github repository (Version Control: clone and fetch)
     - Use pointstar repository as template.  
     - Whenever Google Cloud update their Cortex Data Foundation, the updates will be fetched and rebased to template branches before being merging to evaluate the impact and pushed to pre-prod and prod environment. 
-
+    - enable Secret Manager API
+    - go to cloud build 
+    - configure host connection 
+    - go to setting and enable secret manager for the build account to be used 
+    - create trigger 
+ 
 B. Select deployment options 
 
 1. Configure and Build
