@@ -4,7 +4,7 @@
     "deploySFDC": false,
     "deployMarketing": false,
     "deployOracleEBS": false,
-    "deployDataMesh": true,
+    "deployDataMesh": false,
     "deploySAPMLModels": false,
     "turboMode": true,
     "projectIdSource": "my-int-cortex-0824",
@@ -14,8 +14,8 @@
     "testDataProject": "kittycorn-public",
     "k9": {
         "datasets": {
-            "processing": "k9processing",
-            "reporting": "k9reporting"
+            "processing": "testdata_k9processing",
+            "reporting": "testdata_k9reporting"
         }
     },
     "DataMesh": {
@@ -36,10 +36,10 @@
             "USD"
         ],
         "datasets": {
-            "cdc": "sap_cdc_processed",
-            "raw": "sap_raw",
-            "ml": "sap_ml_models",
-            "reporting": "sap_reporting"
+            "cdc": "testdata_sap_cdc_processed",
+            "raw": "testdata_sap_raw",
+            "ml": "testdata_ml_models",
+            "reporting": "testdata_sap_reporting"
         }
     },
     "SFDC": {
