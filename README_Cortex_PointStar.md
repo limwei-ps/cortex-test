@@ -1176,13 +1176,118 @@ If two projects are used, decide on shared VPC or VPC peering project setup
 ![alt_text](images/image_58.png)
 
 4. Setup and Upgrade github repository (Version Control: clone and fetch)
-    - Use pointstar repository as template.  
-    - Whenever Google Cloud update their Cortex Data Foundation, the updates will be fetched and rebased to template branches before being merging to evaluate the impact and pushed to pre-prod and prod environment. 
-    - enable Secret Manager API
-    - go to cloud build 
-    - configure host connection 
-    - go to setting and enable secret manager for the build account to be used 
-    - create trigger 
+    1. Clone is used to setup the pointstar repository which is to be used as private template.
+    - Clone the remote github repository from Google Cloud. This is used to clone the remote repository from Google Cloud without making any changes to local. The remote origin is called gcp 
+    > `git clone https://github.com/GoogleCloudPlatform/cortex-data-foundation.git cortex-data-foundation --origin gcp`
+    - Navigate into the local folder cloned from gcp 
+    >`cd cortex-data-foundation`
+    - Create a private, empty repository in PointStar repository
+    - Add the newly created repository in PointStar to git which is called ps
+    >`git remote add ps https://github.com/https-github-com-PointStarCloud/cortex-data-foundation.git`
+    - View both the remotes, gcp for Google Cloud and ps for PointStar
+    >`git remote -v`
+    - Push the local which is cloned from gcp cortex to a remote ps repository
+    >`git push ps main`
+
+    - Create new local branch to store pointstar adjusted changes. This branch will be the default to serve as the private repository template  
+    >`git checkout pointstar-main`
+
+    >`git add -a`
+
+    >`git commit -m "Adjust for PointStar"`
+
+    >`git push ps pointstar-main`
+
+    - The remote branch gcp/temp contains the last modified pointstar template  
+    >`git checkout temp`
+    >`git push ps temp`
+
+    ```mermaid
+    graph LR
+
+    subgraph gcp
+    A(remote repository) 
+    end
+
+    subgraph ps
+    B(main remote repository)
+    D(pointstar-main remote repository)
+    H(temp remote repository)
+    D-->|Whenever Google updates their repository, PS will copy the last modified version here|H
+    end
+
+    subgraph local
+    C(local)
+    end
+
+    subgraph PS_changes
+    E(git checkout pointstar-main)
+    F(git add -a`)
+    G("git commit -m "Adjust for PointStar"")
+    end
+
+    gcp --> |git clone|local 
+    local --> |git push ps main|B
+    local --> PS_changes -->|git push ps pointstar-main|D
+
+    ```
+
+    - To use it during production, select the repository as template when creating new repository for customer. Ensure there are `development`, `pre-production`, `production`
+
+    2. Fetch is used to update the pointstar repository template whenever Google Cloud updates their Cortex Framework
+    - Clone private repository from PointStar
+    > `git clone https://github.com/https-github-com-PointStarCloud/cortex-data-foundation.git cortex-data-foundation --origin ps`
+    - Add gcp
+    > `git remote add gcp https://github.com/GoogleCloudPlatform/cortex-data-foundation.git`
+    - Fetch latest update from Google Cloud Cortex Framework, a remote called gcp
+    >`git fetch gcp`
+    - Merge latest change to PS development repository. There will be no merge conflict as it is always at the same commits with Google Cloud remote repository
+    >`git checkout main`
+    - Ensure local branch is tracking the pointstar repository
+    >`git branch --set-upstream-to=ps/main main`
+    >`git merge ps/main`
+    - If above does not work, use git pull from source control graph in any IDE and git push to the PS main branch repository or use git rebase gcp/main
+
+    - Now, delete the temp branch and make a copy of the customized version before we merge the new updates from Google Cloud onto pointstar-main
+    > `Delete the "temp" remote repository from ps remote repository`
+
+    > `git checkout pointstar-main`
+
+    > `git branch -d temp`
+
+    > `git checkout temp`
+
+    > `git push ps temp`
+
+    - Navigate to pointstar-main to now merge the updates and reconcile any merge conflict
+    > `git checkout pointstar-main`
+
+    > `git branch --set-upstream-to=ps/main pointstar-main`
+
+    > `git merge ps/pointstar-main`
+
+    > `Resolve merge conflict`
+
+    > `git push ps pointstar-main`
+
+    3. Fetch to update customer repository
+
+    - Clone customer repository from PointStar 
+    > `git clone https://github.com/https-github-com-PointStarCloud/cortex-data-foundation.git cortex-data-foundation --origin ps`
+    - Add gcp
+    > `git remote add gcp https://github.com/GoogleCloudPlatform/cortex-data-foundation.git`
+    - Fetch latest update from Google Cloud Cortex Framework, a remote called gcp
+    >`git fetch gcp`
+    - Merge latest change to customer repository development branch. Resolve the merge conflict 
+    >`git checkout development`
+    - Ensure local branch is tracking the pointstar repository
+    >`git branch --set-upstream-to=ps/development development`
+    >`git merge ps/development`
+    > `Resolve merge conflict`
+    > `git push ps development`
+
+    - If above does not work, use git pull from source control graph in any IDE and git push to the PS main branch repository. 
+
  
 B. Select deployment options 
 
