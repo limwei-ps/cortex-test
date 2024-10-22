@@ -1318,6 +1318,13 @@ C. Post Deployment
     - [Move the files into the DAG bucket](#move-the-files-into-the-dag-bucket)
     - [Spin Up Composer](#spin--up-cloud-composer)
     - Setup connections (mandatory) for composer and pypackage (if required)
+2. [Sensitive Data Protection]
+    - Existing Cortex uses data governance in BigQuery consisting of data masking(data stewardship) and access control at row, column and table level
+    - Use risk analysis methods before de-identification to help determine an effective de-identification strategy
+    - Use sensitive data discover to generate profiles for your data across an organization, folder, or project. These profiles contain metrics and metadata about your data assets and help you determine where sensitive and high-risk data reside.
+    - Use sensitive data inspection to perform a deep scan of an individual resource to find instances of sensitive data. Recommendation is to use this for high risk data, especially useful if for unstructured data. Data Loss Prevention API is used here 
+    - Use sensitive data de-identification if masking from data governance in BQ is insufficient. Either de-identify at query time and de-identify leading to new copy of table. Data Loss Prevention API is used here  
+    - Use risk analysis methods after de-identification to monitor for any changes or outliers.
 
 
 # FAQ
