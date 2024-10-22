@@ -311,4 +311,4 @@ options:
   automapSubstitutions: true
   pool:
     name: "${_WORKER_POOL_NAME}"
-tags: ["cortex"]
+tags: ["cortex-build-${_PIPELINE_TAG}"]

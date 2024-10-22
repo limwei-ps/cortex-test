@@ -1,0 +1,59 @@
+# Access the id_github file from Secret Manager, and setup SSH
+steps:
+- name: 'gcr.io/cloud-builders/git'
+  id: 'Obtaining secret manager' 
+  secretEnv: ['SSH_KEY']
+  entrypoint: 'bash'
+  args:
+  - -c
+  - |
+    echo "$$SSH_KEY" >> /root/.ssh/id_rsa
+    echo "Obtaining github credentials from secret manager"
+    chmod 400 /root/.ssh/id_rsa
+    cp known_hosts.github /root/.ssh/known_hosts
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+
+# Clone the repository
+- name: 'gcr.io/cloud-builders/git' 
+  id: 'Clone Repository'
+  entrypoint: 'bash'
+  args:
+  - -c
+  - |
+    git clone "${_REPO}"
+  
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+  - name: 'vol1'
+    path: '/cortex-data-foundation'
+
+- name: 'gcr.io/cloud-builders/git' 
+  id: 'Revert Repository for Fail Builds'
+  entrypoint: 'bash'
+  args:
+  - -c
+  - |
+    cd cortex-data-foundation
+    git config --global user.email "cortex-testing@point-star.com"
+    git config --global user.name "cortex-poinstar"
+    git checkout branch
+    git revert --no-edit -m 1 HEAD
+    git push origin branch
+
+  volumes:
+  - name: 'ssh'
+    path: /root/.ssh
+  - name: 'vol1'
+    path: '/cortex-data-foundation'
+
+logsBucket: "gs://${_GCS_BUCKET}"
+substitutions:
+  _REPO: "git@github.com:limwei-ps/cortex-data-foundation.git"
+availableSecrets:
+  secretManager:
+  - versionName: projects/my-int-cortex-0824/secrets/cortex-ssh-github/versions/latest
+    env: 'SSH_KEY'
+tags: ["cortex-cicd-pipeline-${_ENV}-git-revert"]
