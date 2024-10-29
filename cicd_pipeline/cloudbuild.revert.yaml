@@ -37,7 +37,7 @@ steps:
   - -c
   - |
     cd cortex-data-foundation
-    git config --global user.email "cortex-testing@point-star.com"
+    git config --global user.email "cortex-framework@point-star.com"
     git config --global user.name "cortex-poinstar"
     git switch $BRANCH_NAME
     git revert --no-edit -m 1 HEAD
@@ -54,6 +54,6 @@ substitutions:
   _REPO: "git@github.com:https-github-com-PointStarCloud/cortex-data-foundation.git"
 availableSecrets:
   secretManager:
-  - versionName: projects/"${_PROJECT}"/secrets/cortex-ssh-build/versions/latest
+  - versionName: projects/my-int-cortex-0824/secrets/cortex-ssh-build/versions/latest
     env: 'SSH_KEY'
 tags: ["cortex-cicd-pipeline-${_ENV}-git-revert"]

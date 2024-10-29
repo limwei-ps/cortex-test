@@ -1,6 +1,6 @@
 {
     "testData": true,
-    "deploySAP": true,
+    "deploySAP": false,
     "deploySFDC": false,
     "deployMarketing": false,
     "deployOracleEBS": false,
