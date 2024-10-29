@@ -1,0 +1,143 @@
+{
+    "testData": true,
+    "deploySAP": false,
+    "deploySFDC": false,
+    "deployMarketing": false,
+    "deployOracleEBS": false,
+    "deployDataMesh": false,
+    "deploySAPMLModels": false,
+    "turboMode": true,
+    "projectIdSource": "my-int-cortex-0824",
+    "projectIdTarget": "my-int-cortex-0824",
+    "targetBucket": "cortex-data-foundation-dag",
+    "location": "asia-southeast1",
+    "testDataProject": "kittycorn-public",
+    "k9": {
+        "datasets": {
+            "processing": "testdata_k9processing",
+            "reporting": "testdata_k9reporting"
+        }
+    },
+    "DataMesh": {
+        "deployDescriptions": false,
+        "deployLakes": false,
+        "deployCatalog": true,
+        "deployACLs": true
+    },
+    "SAP": {
+        "deployCDC": true,
+        "SQLFlavor": "ecc",
+        "mandt": "100",
+        "languages": [
+            "E",
+            "S"
+        ],
+        "currencies": [
+            "USD"
+        ],
+        "datasets": {
+            "cdc": "testdata_sap_cdc_processed",
+            "raw": "testdata_sap_raw",
+            "ml": "testdata_ml_models",
+            "reporting": "testdata_sap_reporting"
+        }
+    },
+    "SFDC": {
+        "deployCDC": true,
+        "createMappingViews": true,
+        "createPlaceholders": true,
+        "currencies": [
+            "USD"
+        ],
+        "datasets": {
+            "cdc": "sfdc_cdc_processed",
+            "raw": "sfdc_raw",
+            "reporting": "sfdc_reporting"
+        }
+    },
+    "marketing": {
+        "deployGoogleAds": true,
+        "deployCM360": true,
+        "deployTikTok": true,
+        "deployLiveRamp": true,
+        "deployMeta": true,
+        "deploySFMC": true,
+        "deployDV360": true,
+        "deployGA4": true,
+        "dataflowRegion": "asia-southeast1",
+        "GoogleAds": {
+            "deployCDC": true,
+            "lookbackDays": 180,
+            "datasets": {
+                "cdc": "googleads_cdc_processed",
+                "raw": "googleads_raw",
+                "reporting": "googleads_reporting"
+            }
+        },
+        "CM360": {
+            "deployCDC": true,
+            "dataTransferBucket": "cortex-data-foundation-dag",
+            "datasets": {
+                "cdc": "cm360_cdc_processed",
+                "raw": "cm360_raw",
+                "reporting": "cm360_reporting"
+            }
+        },
+        "TikTok": {
+            "deployCDC": true,
+            "datasets": {
+                "cdc": "tiktok_cdc_processed",
+                "raw": "tiktok_raw",
+                "reporting": "tiktok_reporting"
+            }
+        },
+        "LiveRamp": {
+            "datasets": {
+                "cdc": "liveramp_cdc_processed"
+            }
+        },
+        "Meta": {
+            "deployCDC": true,
+            "datasets": {
+                "cdc": "meta_cdc_processed",
+                "raw": "meta_raw",
+                "reporting": "meta_reporting"
+            }
+        },
+        "SFMC": {
+            "deployCDC": true,
+            "fileTransferBucket": "cortex-data-foundation-dag",
+            "datasets": {
+                "cdc": "sfmc_cdc_processed",
+                "raw": "sfmc_raw",
+                "reporting": "smfc_reporting"
+            }
+        },
+        "DV360": {
+            "deployCDC": true,
+            "datasets": {
+                "raw": "",
+                "cdc": "",
+                "reporting": "REPORTING_DV360"
+            }
+        },
+        "GA4": {
+            "datasets": {
+                "cdc": [
+                    {"property_id": 0, "name": ""}
+                ],
+                "reporting": "REPORTING_GA4"
+            }
+        }
+    },
+    "OracleEBS": {
+        "itemCategorySetIds": [1100000425],
+        "currencyConversionType": "Corporate",
+        "currencyConversionTargets": ["USD"],
+        "languages": ["US"],
+        "datasets": {
+            "cdc": "",
+            "reporting": "REPORTING_OracleEBS"
+        }
+    }
+}

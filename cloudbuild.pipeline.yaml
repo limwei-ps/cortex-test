@@ -18,7 +18,7 @@ steps:
 
       if [[ ${_SUCCESS} != "true" && (${_ENV} == "pre_production" || ${_ENV} == "production")]]; then
           echo -e "\n🛑 Data Foundation deployment has failed. 🛑"
-          gcloud builds submit --config cicd_pipeline/cloudbuild.revert.yaml --substitutions=_GCS_BUCKET="${_GCS_BUCKET}",_ENV="${_ENV}"
+          gcloud builds submit --config cicd_pipeline/cloudbuild.revert.yaml --substitutions=_GCS_BUCKET="${_GCS_BUCKET}",_ENV="${_ENV}",_PROJECT="${_PROJECT}"
           echo "Setup Notification to notify dev & user if test fails in pre-prod or build or test fails in prod"
           exit 1
       elif [[ ${_SUCCESS} != "true" ]]; then
@@ -40,22 +40,17 @@ steps:
       echo "Continuous Deployment"
       if [[ ${_ENV} == "development" ]]; then
         echo "==Deploying CICD Build for Cortex Framework to pre-production branch=="
-        gcloud builds submit --config cicd_pipeline/cloudbuild.push.yaml --substitutions=_GCS_BUCKET="${_GCS_BUCKET}",_ENV="${_ENV}"
+        gcloud builds submit --config cicd_pipeline/cloudbuild.push.yaml --substitutions=_GCS_BUCKET="${_GCS_BUCKET}",_ENV="${_ENV}",_PROJECT="${_PROJECT}"
       elif [[ ${_ENV} == "pre_production" ]]; then
         echo "==Deploying CICD Build for Cortex Framework to production branch=="
-        gcloud builds submit --config cicd_pipeline/cloudbuild.push.yaml --substitutions=_GCS_BUCKET="${_GCS_BUCKET}",_ENV="${_ENV}"
+        gcloud builds submit --config cicd_pipeline/cloudbuild.push.yaml --substitutions=_GCS_BUCKET="${_GCS_BUCKET}",_ENV="${_ENV}",_PROJECT="${_PROJECT}"
         echo "Setup Notification to notify user to test in pre-prod and to approve build to prod"
       elif [[ ${_ENV} == "production" ]]; then
         echo "Setup Notification to notify user change has been deployed to prod"
       fi
-  # #!/usr/bin/env bash 
+
   # _PJID_SRC_=$(jq -r ."projectIdSource" ${_CONFIG_FILE})
   # _PJID_TGT_=$(jq -r ."projectIdTarget" ${_CONFIG_FILE})
-  # _DS_REPORTING_=$(jq -r ."SAP.datasets.reporting" ${_CONFIG_FILE})
-  # _DS_RAW_=$(jq -r ."SAP.datasets.raw" ${_CONFIG_FILE})
-  # _DS_CDC_=$(jq -r ."SAP.datasets.cdc" ${_CONFIG_FILE})
-
-  # echo "Deploying Oracle EBS Test Harness."
   # python3 src/pipeline/test_sap_workload.py --workload "OracleEBS" --dataset "cdc"
 
 logsBucket: "gs://${_GCS_BUCKET}"

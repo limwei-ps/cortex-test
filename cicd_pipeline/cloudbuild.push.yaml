@@ -37,11 +37,11 @@ steps:
   - -c
   - |
     cd cortex-data-foundation
-    git config --global user.email "cortex-testing@point-star.com"
+    git config --global user.email "cortex-framework@point-star.com"
     git config --global user.name "cortex-poinstar"
-    git switch "${NEXT_BRANCH}"
-    git merge -X theirs --no-edit "${CURR_BRANCH}"
-    git push origin "${NEXT_BRANCH}"
+    git switch "${_NEXT_BRANCH}"
+    git merge -X theirs --no-edit $BRANCH_NAME
+    git push origin "${_NEXT_BRANCH}"
 
 #swap cherry pick with merge theirs    
 #git cherry-pick origin/pointstar-main
@@ -57,6 +57,6 @@ substitutions:
   _REPO: "git@github.com:https-github-com-PointStarCloud/cortex-data-foundation.git"
 availableSecrets:
   secretManager:
-  - versionName: projects/"${_PROJECT}"/secrets/cortex-ssh-github/versions/latest
+  - versionName: projects/"${_PROJECT}"/secrets/cortex-ssh-build/versions/latest
     env: 'SSH_KEY'
 tags: ["cortex-cicd-pipeline-${_ENV}-git-push"]
