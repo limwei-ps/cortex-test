@@ -40,7 +40,7 @@ steps:
     git config --global user.email "cortex-framework@point-star.com"
     git config --global user.name "cortex-poinstar"
     git switch "${_NEXT_BRANCH}"
-    git merge -X theirs --no-edit $BRANCH_NAME
+    git merge -X theirs --no-edit "${_ENV}"
     git push origin "${_NEXT_BRANCH}"
 
 #swap cherry pick with merge theirs    

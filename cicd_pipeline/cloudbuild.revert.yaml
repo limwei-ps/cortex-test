@@ -39,9 +39,9 @@ steps:
     cd cortex-data-foundation
     git config --global user.email "cortex-framework@point-star.com"
     git config --global user.name "cortex-poinstar"
-    git switch $BRANCH_NAME
+    git switch "${_ENV}"
     git revert --no-edit -m 1 HEAD
-    git push origin $BRANCH_NAME
+    git push origin "${_ENV}"
 
   volumes:
   - name: 'ssh'
