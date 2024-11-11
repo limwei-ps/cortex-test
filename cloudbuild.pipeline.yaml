@@ -26,16 +26,28 @@ steps:
           exit 1
       fi
 
-  - name: gcr.io/kittycorn-public/deploy-kittycorn:v2.0
-    id: 'automated_testing_for_cortex'
+  - name: 'gcr.io/cloud-builders/mvn'
+    id: 'automated_testing_for_cortex_java'
     waitFor: ['building_cortex_data_foundation']
     script: |
+      #!/usr/bin/env bash
+      echo "Automated Testing"
+      cd cortex_test
+      mvn test
+      echo -e "\n✅ Data Foundation has been successfully deployed. 🦄"
+# cd target
+
+  - name: gcr.io/kittycorn-public/deploy-kittycorn:v2.0
+    id: 'automated_testing_for_cortex_python'
+    waitFor: ['building_cortex_data_foundation']
+    script: |
+      #!/usr/bin/env bash
       echo "Automated Testing"
       echo -e "\n✅ Data Foundation has been successfully deployed. 🦄"
 
   - name: gcr.io/kittycorn-public/deploy-kittycorn:v2.0
     id: 'deploying_cortex_data_foundation'
-    waitFor: ['automated_testing_for_cortex']
+    waitFor: ['automated_testing_for_cortex_python', 'automated_testing_for_cortex_java']
     script: |
       echo "Continuous Deployment"
       if [[ ${_ENV} == "development" ]]; then
